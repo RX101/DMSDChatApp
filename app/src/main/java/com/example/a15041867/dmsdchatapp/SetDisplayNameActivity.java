@@ -38,7 +38,6 @@ public class SetDisplayNameActivity extends AppCompatActivity {
         // TODO: Task 2: Get Firebase database instance and reference
         firebaseDatabase = FirebaseDatabase.getInstance();
         nameListRef = firebaseDatabase.getReference("profiles/");
-        Toast.makeText(getBaseContext(),firebaseUser.getUid() +"", Toast.LENGTH_LONG).show();
 
         btnSubmitDisplayName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,11 +66,16 @@ public class SetDisplayNameActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_logout) {
+        if(id == R.id.action_setDisplayName){
+            Intent i = new Intent(getBaseContext(), SetDisplayNameActivity.class);
+            startActivity(i);
+        }else if(id == R.id.action_main) {
+            Intent i = new Intent(getBaseContext(), MainActivity.class);
+            startActivity(i);
+        }else if (id == R.id.action_logout) {
             firebaseAuth.signOut();
             Intent i = new Intent(getBaseContext(), MainActivity.class);
             startActivity(i);
-
         }
 
         return super.onOptionsItemSelected(item);

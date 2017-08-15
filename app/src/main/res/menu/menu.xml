@@ -3,6 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_setDisplayName"
+        android:orderInCategory="100"
+        android:title="Set Display Name"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_main"
+        android:orderInCategory="100"
+        android:title="Main Activity"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_logout"
         android:orderInCategory="100"
         android:title="Logout"
