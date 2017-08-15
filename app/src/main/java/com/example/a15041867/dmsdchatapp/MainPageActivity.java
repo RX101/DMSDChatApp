@@ -6,11 +6,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,6 +23,7 @@ import android.text.format.DateFormat;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class MainPageActivity extends AppCompatActivity {
@@ -29,6 +32,10 @@ public class MainPageActivity extends AppCompatActivity {
     EditText etMessage;
     Button btnAddMessage;
     String name;
+    ListView lv;
+    ArrayList<Messages> alMessage = new ArrayList<Messages>();
+    private Messages message;
+    CustomAdapter caMessage = null;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -46,6 +53,11 @@ public class MainPageActivity extends AppCompatActivity {
         tvWeather = (TextView)findViewById(R.id.tvWeather);
         etMessage = (EditText)findViewById(R.id.etMessage);
         btnAddMessage = (Button)findViewById(R.id.btnAddMessage);
+        lv = (ListView)findViewById(R.id.lv);
+        alMessage = new ArrayList<Messages>();
+        caMessage = new CustomAdapter(this, R.layout.row, alMessage);
+        lv.setAdapter(caMessage);
+
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
@@ -109,6 +121,62 @@ public class MainPageActivity extends AppCompatActivity {
 
                 Messages messages = new Messages(msg,messageTime,name);
                 messageListRef.push().setValue(messages);
+                etMessage.setText("");
+            }
+        });
+
+        messageListRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.i("MainActivity", "onChildAdded()");
+                Messages msg = dataSnapshot.getValue(Messages.class);
+                if(msg != null) {
+                    msg.setId(dataSnapshot.getKey());
+                    alMessage.add(msg);
+                    caMessage.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                String selectedId = dataSnapshot.getKey();
+                Messages msg = dataSnapshot.getValue(Messages.class);
+                if(msg != null) {
+                    for (int i = 0; i < alMessage.size(); i++) {
+                        if (alMessage.get(i).getId().equals(selectedId)) {
+                            msg.setId(selectedId);
+                            alMessage.set(i, msg);
+                        }
+                    }
+                    caMessage.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Log.i("MainActivity", "onChildRemoved()");
+
+                String selectedId = dataSnapshot.getKey();
+                Messages msg = dataSnapshot.getValue(Messages.class);
+                if(msg != null) {
+                    for(int i = 0; i < alMessage.size(); i++) {
+                        if(alMessage.get(i).getId().equals(selectedId)) {
+                            msg.setId(selectedId);
+                            alMessage.remove(i);
+                        }
+                    }
+                    caMessage.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
 

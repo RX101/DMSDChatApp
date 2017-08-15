@@ -5,6 +5,7 @@ package com.example.a15041867.dmsdchatapp;
  */
 
 public class Messages {
+    private String id;
     private String messageText;
     private String messageTime;
     private String messageUser;
@@ -13,7 +14,16 @@ public class Messages {
 
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public Messages(String messageText, String messageTime, String messageUser) {
+
         this.messageText = messageText;
         this.messageTime = messageTime;
         this.messageUser = messageUser;
